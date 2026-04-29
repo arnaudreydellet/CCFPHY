@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entraînement — Énergie électrique en atelier de menuiserie</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f4f6f8;
+    color: #222;
+    line-height: 1.6;
+  }
+  h1 {
+    color: #1a4d7a;
+    border-bottom: 3px solid #1a4d7a;
+    padding-bottom: 10px;
+  }
+  .intro-card {
+    background: linear-gradient(135deg, #e3f2fd 0%, #fff 100%);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 25px;
+    border-left: 5px solid #1976d2;
+  }
+  .intro-card p { margin: 6px 0; }
+  .formules {
+    background: #fff8e1;
+    border-left: 5px solid #f9a825;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+  }
+  .formules h2 {
+    margin-top: 0;
+    color: #b26a00;
+    font-size: 1.1em;
+  }
+  .formules ul { margin: 8px 0; padding-left: 20px; }
+  .formules li { margin: 6px 0; }
+  .formules code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #b26a00;
+    font-size: 1.05em;
+  }
+  .exercice-titre {
+    color: white;
+    background: #1a4d7a;
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-top: 35px;
+    margin-bottom: 5px;
+    font-size: 1.15em;
+    font-weight: bold;
+  }
+  .exercice-titre .points {
+    float: right;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 0.9em;
+  }
+  .enonce {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .enonce h2 {
+    margin-top: 0;
+    color: #1b5e20;
+    font-size: 1.05em;
+  }
+  .panne {
+    background: #ffebee;
+    border-left: 5px solid #c62828;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin: 15px 0;
+  }
+  .panne strong { color: #b71c1c; }
+  .question {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .question h3 {
+    margin-top: 0;
+    color: #1a4d7a;
+  }
+  .question h3 .pts {
+    font-size: 0.85em;
+    color: #e65100;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .brouillon {
+    background: #f5f5f5;
+    border: 1px dashed #999;
+    border-radius: 6px;
+    padding: 10px;
+    margin: 10px 0;
+    font-style: italic;
+    color: #555;
+    font-size: 0.95em;
+  }
+  .brouillon::before { content: "✏️ "; }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+  input[type="number"] {
+    padding: 8px 12px;
+    font-size: 1em;
+    border: 2px solid #bbb;
+    border-radius: 5px;
+    width: 120px;
+  }
+  input:focus { outline: none; border-color: #1976d2; }
+  .unite { font-weight: bold; color: #555; }
+  .precision {
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+  }
+  button {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  button:hover { background: #0d47a1; }
+  button:disabled { background: #999; cursor: not-allowed; }
+  .feedback {
+    margin-top: 12px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: none;
+  }
+  .feedback.correct {
+    background: #c8e6c9;
+    border-left: 4px solid #2e7d32;
+    color: #1b5e20;
+  }
+  .feedback.indice {
+    background: #fff3e0;
+    border-left: 4px solid #ef6c00;
+    color: #5d3a00;
+  }
+  .feedback.solution {
+    background: #ffe0b2;
+    border-left: 4px solid #e65100;
+    color: #4e2700;
+  }
+  .qcm-options { margin: 10px 0; }
+  .qcm-options label {
+    display: block;
+    padding: 10px;
+    margin: 6px 0;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .qcm-options label:hover { background: #e3f2fd; }
+  .qcm-options input { margin-right: 10px; }
+  .progression {
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #1a4d7a;
+    border: 1px solid #ddd;
+  }
+  .schema-container {
+    background: #fafafa;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: center;
+  }
+  .schema-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .schema-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 5px;
+  }
+  .schema-inputs label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95em;
+  }
+  .schema-inputs input { width: 80px; }
+</style>
+</head>
+<body>
+
+<h1>🛠️ Entraînement — L'énergie électrique en atelier</h1>
+
+<div class="intro-card">
+  <p><strong>Préparation au sujet d'examen — 1<sup>re</sup> TMA</strong></p>
+  <p>Cet entraînement reprend la même structure que le sujet d'examen, dans un nouveau contexte. Tu as droit à 3 indices par question si tu te trompes. Pose tous tes calculs sur ta feuille de brouillon avant de répondre !</p>
+</div>
+
+<div class="progression">
+  Score : <span id="score">0</span> / 14 questions validées &nbsp;|&nbsp; Total : 20 points
+</div>
+
+<div class="formules">
+  <h2>📐 Formulaire</h2>
+  <ul>
+    <li><strong>Loi d'Ohm</strong> : <code>U = R × I</code> &nbsp;|&nbsp; <code>I = U ÷ R</code> &nbsp;|&nbsp; <code>R = U ÷ I</code></li>
+    <li><strong>Loi des nœuds</strong> : <code>I<sub>totale</sub> = I<sub>1</sub> + I<sub>2</sub> + I<sub>3</sub> + ...</code></li>
+    <li><strong>Loi des mailles</strong> : <code>U<sub>générateur</sub> = U<sub>1</sub> + U<sub>2</sub> + ...</code></li>
+    <li><strong>En série</strong> : intensité identique partout. Si un dipôle est cassé, tout le circuit s'arrête.</li>
+    <li><strong>En dérivation</strong> : tension identique sur chaque branche. Si une branche est cassée, les autres continuent.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- EXERCICE 1 : Capteur de fin de course sur une CN -->
+<!-- ============================================================ -->
+
+<div class="exercice-titre">
+  Exercice 1 — Le capteur de fin de course de la défonceuse CN
+  <span class="points">10 points</span>
+</div>
+
+<div class="enonce">
+  <p>Dans l'atelier de menuiserie, la <strong>défonceuse à commande numérique (CN)</strong> est équipée d'un <strong>capteur de fin de course</strong>. Ce petit dispositif électronique sert à arrêter automatiquement la machine si le chariot va trop loin (sécurité). Il est alimenté par un circuit basse tension <strong>en série</strong>, comprenant le capteur et une <strong>résistance de protection</strong>.</p>
+  <p>Données techniques (fonctionnement nominal) :</p>
+  <ul>
+    <li>Tension d'alimentation : <strong>U = 12 V</strong></li>
+    <li>Résistance de protection : <strong>R<sub>prot</sub> = 2 Ω</strong></li>
+    <li>Résistance du capteur : <strong>R<sub>capt</sub> = 4 Ω</strong></li>
+    <li>Tension nécessaire au bon fonctionnement du capteur : <strong>8 V</strong></li>
+  </ul>
+</div>
+
+<div class="question" data-q="1">
+  <h3>1. Calculer la <strong>résistance totale</strong> du circuit. <span class="pts">(1 pt)</span></h3>
+  <div class="brouillon">En série, les résistances s'additionnent.</div>
+  <div class="input-row">
+    <span>R<sub>totale</sub> =</span>
+    <input type="number" step="0.01" id="q1-input">
+    <span class="unite">Ω</span>
+    <button onclick="verifier(1)">Valider</button>
+  </div>
+  <div class="feedback" id="q1-feedback"></div>
+</div>
+
+<div class="question" data-q="2">
+  <h3>2. En déduire l'<strong>intensité</strong> du courant qui circule dans le circuit. <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">Loi d'Ohm : I = U ÷ R_totale.</div>
+  <div class="input-row">
+    <span>I =</span>
+    <input type="number" step="0.01" id="q2-input">
+    <span class="unite">A</span>
+    <button onclick="verifier(2)">Valider</button>
+  </div>
+  <div class="feedback" id="q2-feedback"></div>
+</div>
+
+<div class="question" data-q="3">
+  <h3>3. Calculer la tension aux bornes de la <strong>résistance de protection</strong>. <span class="pts">(1 pt)</span></h3>
+  <div class="brouillon">U_prot = R_prot × I.</div>
+  <div class="input-row">
+    <span>U<sub>prot</sub> =</span>
+    <input type="number" step="0.01" id="q3-input">
+    <span class="unite">V</span>
+    <button onclick="verifier(3)">Valider</button>
+  </div>
+  <div class="feedback" id="q3-feedback"></div>
+</div>
+
+<div class="question" data-q="4">
+  <h3>4. Calculer la tension aux bornes du <strong>capteur</strong>. <span class="pts">(1 pt)</span></h3>
+  <div class="brouillon">Deux méthodes : U_capt = R_capt × I, ou loi des mailles : U_capt = U − U_prot.</div>
+  <div class="input-row">
+    <span>U<sub>capt</sub> =</span>
+    <input type="number" step="0.01" id="q4-input">
+    <span class="unite">V</span>
+    <button onclick="verifier(4)">Valider</button>
+  </div>
+  <div class="feedback" id="q4-feedback"></div>
+</div>
+
+<div class="question" data-q="5">
+  <h3>5. Compléter le schéma du circuit en fonctionnement nominal. <span class="pts">(2 pts)</span></h3>
+  <p>Reporte les valeurs trouvées : tensions aux bornes de la résistance et du capteur, et intensité dans le circuit.</p>
+  <div class="schema-container">
+    <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="80" x2="540" y2="80" stroke="#222" stroke-width="2"/>
+      <line x1="540" y1="80" x2="540" y2="220" stroke="#222" stroke-width="2"/>
+      <line x1="540" y1="220" x2="60" y2="220" stroke="#222" stroke-width="2"/>
+      <line x1="60" y1="220" x2="60" y2="170" stroke="#222" stroke-width="2"/>
+      <line x1="60" y1="130" x2="60" y2="80" stroke="#222" stroke-width="2"/>
+
+      <!-- Alimentation -->
+      <line x1="40" y1="125" x2="80" y2="125" stroke="#222" stroke-width="3"/>
+      <line x1="50" y1="150" x2="70" y2="150" stroke="#222" stroke-width="2"/>
+      <text x="10" y="115" font-size="13" fill="#1976d2" font-weight="bold">12 V</text>
+      <text x="0" y="180" font-size="11" fill="#666">alim.</text>
+
+      <!-- Résistance de protection -->
+      <rect x="200" y="65" width="100" height="30" fill="#fff" stroke="#222" stroke-width="2"/>
+      <text x="218" y="86" font-size="12" fill="#222">R_prot = 2Ω</text>
+      <text x="195" y="125" font-size="12" fill="#222">protection</text>
+
+      <!-- Capteur (représenté comme un rectangle avec "C") -->
+      <rect x="395" y="60" width="60" height="40" fill="#fff" stroke="#222" stroke-width="2"/>
+      <text x="412" y="85" font-size="14" fill="#222" font-weight="bold">C</text>
+      <text x="402" y="125" font-size="13" fill="#222">capteur</text>
+
+      <!-- Sens du courant -->
+      <polygon points="160,75 175,80 160,85" fill="#d32f2f"/>
+      <text x="120" y="60" font-size="12" fill="#d32f2f" font-weight="bold">sens du courant</text>
+
+      <!-- Flèche U prot -->
+      <line x1="200" y1="40" x2="300" y2="40" stroke="#1976d2" stroke-width="2"/>
+      <polygon points="200,40 208,36 208,44" fill="#1976d2"/>
+      <polygon points="300,40 292,36 292,44" fill="#1976d2"/>
+      <text x="215" y="32" font-size="13" fill="#1976d2" font-weight="bold">U_prot = ?</text>
+
+      <!-- Flèche U capt -->
+      <line x1="395" y1="40" x2="455" y2="40" stroke="#1976d2" stroke-width="2"/>
+      <polygon points="395,40 403,36 403,44" fill="#1976d2"/>
+      <polygon points="455,40 447,36 447,44" fill="#1976d2"/>
+      <text x="395" y="32" font-size="13" fill="#1976d2" font-weight="bold">U_capt = ?</text>
+
+      <text x="200" y="245" font-size="13" fill="#d32f2f" font-weight="bold">I = ? (intensité dans le circuit)</text>
+    </svg>
+  </div>
+  <div class="schema-inputs">
+    <label>U<sub>prot</sub> = <input type="number" step="0.01" id="q5-uprot"> V</label>
+    <label>U<sub>capt</sub> = <input type="number" step="0.01" id="q5-ucapt"> V</label>
+    <label>I = <input type="number" step="0.01" id="q5-i"> A</label>
+  </div>
+  <button onclick="verifier(5)">Valider</button>
+  <div class="feedback" id="q5-feedback"></div>
+</div>
+
+<div class="panne">
+  <p><strong>Panne signalée</strong> : un matin, la défonceuse CN ne s'arrête plus en bout de course (le capteur ne fonctionne plus). M. REYDELLET teste le circuit avec un ampèremètre et mesure une intensité de <strong>I = 1 A</strong> seulement.</p>
+</div>
+
+<div class="question" data-q="6">
+  <h3>6. <strong>DIAGNOSTIC.</strong> En utilisant la mesure I = 1 A, calcule la <strong>résistance totale réelle</strong> du circuit en panne. <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">Utilise R_totale = U ÷ I avec U = 12 V et I = 1 A (mesuré).</div>
+  <div class="input-row">
+    <span>R<sub>totale réelle</sub> =</span>
+    <input type="number" step="0.01" id="q6-input">
+    <span class="unite">Ω</span>
+    <button onclick="verifier(6)">Valider</button>
+  </div>
+  <div class="feedback" id="q6-feedback"></div>
+</div>
+
+<div class="question" data-q="7">
+  <h3>7. <strong>CAUSE.</strong> Sachant que la résistance du capteur (R<sub>capt</sub> = 4 Ω) n'a pas changé, quelle est la valeur réelle de la résistance de protection actuellement dans le circuit ? <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">R_totale = R_prot + R_capt → R_prot = R_totale − R_capt.</div>
+  <div class="input-row">
+    <span>R<sub>prot</sub> =</span>
+    <input type="number" step="0.01" id="q7-input">
+    <span class="unite">Ω</span>
+    <button onclick="verifier(7)">Valider</button>
+  </div>
+  <div class="feedback" id="q7-feedback"></div>
+</div>
+
+<div class="question" data-q="8">
+  <h3>8. <strong>CONCLUSION.</strong> Pourquoi le capteur ne fonctionne-t-il plus ? <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">Calcule la tension reçue par le capteur en situation de panne (U_capt = R_capt × I = 4 × 1) et compare aux 8 V nécessaires.</div>
+  <div class="qcm-options">
+    <label><input type="radio" name="q8" value="A"> A) Le capteur est cassé : il faut le remplacer.</label>
+    <label><input type="radio" name="q8" value="B"> B) La tension d'alimentation a chuté à moins de 12 V.</label>
+    <label><input type="radio" name="q8" value="C"> C) Quelqu'un a remplacé la résistance de protection par une résistance trop élevée. Du coup, elle « consomme » trop de tension et le capteur ne reçoit que 4 V au lieu des 8 V nécessaires pour fonctionner.</label>
+    <label><input type="radio" name="q8" value="D"> D) Le circuit a été recâblé en dérivation par erreur, ce qui empêche le capteur de fonctionner.</label>
+  </div>
+  <button onclick="verifier(8)">Valider</button>
+  <div class="feedback" id="q8-feedback"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- EXERCICE 2 : Tableau secondaire de l'atelier -->
+<!-- ============================================================ -->
+
+<div class="exercice-titre">
+  Exercice 2 — Le tableau secondaire de l'atelier
+  <span class="points">10 points</span>
+</div>
+
+<div class="enonce">
+  <p>L'atelier de menuiserie dispose d'un <strong>tableau secondaire</strong> qui alimente un poste de travail mobile (utilisé pour les chantiers en extérieur). Ce tableau est branché sur le secteur en <strong>230 V</strong> et alimente trois machines portatives en dérivation. Il est protégé par un disjoncteur de <strong>20 A</strong>.</p>
+  <p>Intensités appelées en fonctionnement nominal :</p>
+  <ul>
+    <li>🔧 Compresseur (pour cloueuse pneumatique) : <strong>I<sub>comp</sub> = 10 A</strong></li>
+    <li>🪚 Ponceuse à bande : <strong>I<sub>pons</sub> = 7 A</strong></li>
+    <li>🔩 Perceuse à colonne portable : <strong>I<sub>perc</sub> = 5 A</strong></li>
+  </ul>
+</div>
+
+<div class="panne">
+  <p>Mardi après-midi, l'apprenti branche les <strong>trois machines en même temps</strong>. Au bout de quelques secondes, le disjoncteur saute et coupe l'atelier.</p>
+</div>
+
+<div class="question" data-q="9">
+  <h3>9. Quelle est l'<strong>intensité totale</strong> appelée par les trois machines simultanément ? Citer la loi utilisée. <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">Loi des nœuds : I_totale = somme des intensités de chaque branche.</div>
+  <div class="input-row">
+    <span>I<sub>totale</sub> =</span>
+    <input type="number" step="0.01" id="q9-input">
+    <span class="unite">A</span>
+    <button onclick="verifier(9)">Valider</button>
+  </div>
+  <div class="feedback" id="q9-feedback"></div>
+</div>
+
+<div class="question" data-q="10">
+  <h3>10. Pourquoi le disjoncteur saute-t-il ? <span class="pts">(1 pt)</span></h3>
+  <div class="qcm-options">
+    <label><input type="radio" name="q10" value="A"> A) Parce que les machines sont mal câblées en dérivation.</label>
+    <label><input type="radio" name="q10" value="B"> B) Parce que l'intensité totale (22 A) dépasse le seuil de protection du disjoncteur (20 A), ce qui provoque la coupure automatique.</label>
+    <label><input type="radio" name="q10" value="C"> C) Parce que la tension de 230 V est trop élevée pour le compresseur.</label>
+    <label><input type="radio" name="q10" value="D"> D) Parce que la résistance totale du circuit est trop faible.</label>
+  </div>
+  <button onclick="verifier(10)">Valider</button>
+  <div class="feedback" id="q10-feedback"></div>
+</div>
+
+<div class="question" data-q="11">
+  <h3>11. Calculer la <strong>résistance</strong> du compresseur en fonctionnement. Utiliser la loi d'Ohm. <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">En dérivation, chaque machine reçoit la tension complète : 230 V. Cherche R = U ÷ I.</div>
+  <div class="input-row">
+    <span>R<sub>comp</sub> =</span>
+    <input type="number" step="0.01" id="q11-input">
+    <span class="unite">Ω</span>
+    <button onclick="verifier(11)">Valider</button>
+  </div>
+  <div class="feedback" id="q11-feedback"></div>
+</div>
+
+<div class="question" data-q="12">
+  <h3>12. Compléter le schéma de l'installation (3 machines en dérivation). <span class="pts">(2 pts)</span></h3>
+  <p>Indique la tension aux bornes de chaque machine et l'intensité totale appelée par le tableau.</p>
+  <div class="schema-container">
+    <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg">
+      <!-- Tableau secondaire -->
+      <line x1="50" y1="200" x2="90" y2="200" stroke="#222" stroke-width="3"/>
+      <line x1="60" y1="230" x2="80" y2="230" stroke="#222" stroke-width="2"/>
+      <text x="15" y="220" font-size="13" fill="#1976d2" font-weight="bold">230 V</text>
+      <text x="0" y="245" font-size="10" fill="#666">tableau</text>
+
+      <!-- Fil sortie haut -->
+      <line x1="70" y1="200" x2="70" y2="80" stroke="#222" stroke-width="2"/>
+      <line x1="70" y1="80" x2="380" y2="80" stroke="#222" stroke-width="2"/>
+
+      <!-- Indication I_total -->
+      <polygon points="180,75 195,80 180,85" fill="#d32f2f"/>
+      <text x="140" y="68" font-size="12" fill="#d32f2f" font-weight="bold">I_total = ?</text>
+
+      <!-- Nœud 1 -->
+      <circle cx="380" cy="80" r="4" fill="#222"/>
+
+      <!-- Branche 1 (haut) : Compresseur -->
+      <line x1="380" y1="80" x2="650" y2="80" stroke="#222" stroke-width="2"/>
+      <rect x="495" y="60" width="60" height="40" fill="#fff" stroke="#222" stroke-width="2"/>
+      <text x="500" y="85" font-size="11" fill="#222">COMP.</text>
+      <text x="490" y="125" font-size="13" fill="#222">Compresseur</text>
+      <text x="395" y="65" font-size="12" fill="#d32f2f" font-weight="bold">I_comp = 10 A</text>
+      <text x="580" y="65" font-size="12" fill="#1976d2" font-weight="bold">U_comp = ?</text>
+
+      <!-- Branche 2 (milieu) : Ponceuse -->
+      <line x1="380" y1="80" x2="380" y2="220" stroke="#222" stroke-width="2"/>
+      <line x1="380" y1="220" x2="650" y2="220" stroke="#222" stroke-width="2"/>
+      <rect x="495" y="200" width="60" height="40" fill="#fff" stroke="#222" stroke-width="2"/>
+      <text x="500" y="225" font-size="11" fill="#222">PONS.</text>
+      <text x="495" y="265" font-size="13" fill="#222">Ponceuse</text>
+      <text x="395" y="160" font-size="12" fill="#d32f2f" font-weight="bold">I_pons = 7 A</text>
+      <text x="580" y="195" font-size="12" fill="#1976d2" font-weight="bold">U_pons = ?</text>
+
+      <!-- Branche 3 (bas) : Perceuse -->
+      <line x1="380" y1="220" x2="380" y2="340" stroke="#222" stroke-width="2"/>
+      <line x1="380" y1="340" x2="650" y2="340" stroke="#222" stroke-width="2"/>
+      <rect x="495" y="320" width="60" height="40" fill="#fff" stroke="#222" stroke-width="2"/>
+      <text x="500" y="345" font-size="11" fill="#222">PERC.</text>
+      <text x="495" y="385" font-size="13" fill="#222">Perceuse</text>
+      <text x="395" y="285" font-size="12" fill="#d32f2f" font-weight="bold">I_perc = 5 A</text>
+      <text x="580" y="335" font-size="12" fill="#1976d2" font-weight="bold">U_perc = ?</text>
+
+      <!-- Nœud 2 et retour -->
+      <line x1="650" y1="80" x2="650" y2="340" stroke="#222" stroke-width="2"/>
+      <circle cx="650" cy="200" r="4" fill="#222"/>
+      <line x1="650" y1="200" x2="730" y2="200" stroke="#222" stroke-width="2"/>
+      <line x1="730" y1="200" x2="730" y2="400" stroke="#222" stroke-width="2"/>
+      <line x1="730" y1="400" x2="70" y2="400" stroke="#222" stroke-width="2"/>
+      <line x1="70" y1="400" x2="70" y2="240" stroke="#222" stroke-width="2"/>
+    </svg>
+  </div>
+  <div class="schema-inputs">
+    <label>U<sub>comp</sub> = <input type="number" step="0.01" id="q12-ucomp"> V</label>
+    <label>U<sub>pons</sub> = <input type="number" step="0.01" id="q12-upons"> V</label>
+    <label>U<sub>perc</sub> = <input type="number" step="0.01" id="q12-uperc"> V</label>
+    <label>I<sub>total</sub> = <input type="number" step="0.01" id="q12-itot"> A</label>
+  </div>
+  <button onclick="verifier(12)">Valider</button>
+  <div class="feedback" id="q12-feedback"></div>
+</div>
+
+<div class="question" data-q="13">
+  <h3>13. <strong>RÉSOLUTION.</strong> L'apprenti doit utiliser en priorité la <strong>ponceuse et la perceuse</strong> pour finir un meuble. Quelle machine doit-il éteindre pour ne pas faire sauter le disjoncteur ? <span class="pts">(1,5 pt)</span></h3>
+  <div class="brouillon">Calcule mentalement les trois scénarios « éteindre une machine » et compare au seuil de 20 A.</div>
+  <div class="qcm-options">
+    <label><input type="radio" name="q13" value="A"> A) Éteindre la perceuse (I_total = 17 A) — mais la perceuse est nécessaire au travail.</label>
+    <label><input type="radio" name="q13" value="B"> B) Éteindre la ponceuse (I_total = 15 A) — mais la ponceuse est nécessaire au travail.</label>
+    <label><input type="radio" name="q13" value="C"> C) Éteindre le compresseur (I_total = 12 A, donc inférieur à 20 A) — la ponceuse et la perceuse peuvent fonctionner ensemble.</label>
+    <label><input type="radio" name="q13" value="D"> D) Aucune solution possible : il faut acheter un disjoncteur plus puissant.</label>
+  </div>
+  <button onclick="verifier(13)">Valider</button>
+  <div class="feedback" id="q13-feedback"></div>
+</div>
+
+<div class="question" data-q="14">
+  <h3>14. <strong>RÉFLEXION FINALE.</strong> Imagine que les trois machines aient été branchées <strong>en série</strong> au lieu d'être en dérivation. Quelle aurait été la conséquence ? <span class="pts">(1,5 pt)</span></h3>
+  <div class="qcm-options">
+    <label><input type="radio" name="q14" value="A"> A) Aucune différence : le disjoncteur aurait sauté de la même façon.</label>
+    <label><input type="radio" name="q14" value="B"> B) Les machines auraient consommé moins d'électricité au total.</label>
+    <label><input type="radio" name="q14" value="C"> C) Si une machine s'arrêtait (panne ou apprenti qui l'éteint), TOUTES les autres se seraient arrêtées en même temps. De plus, la tension de 230 V aurait été partagée entre les trois machines, donc aucune n'aurait reçu assez de tension pour fonctionner correctement.</label>
+    <label><input type="radio" name="q14" value="D"> D) Les machines auraient été plus performantes car le courant aurait été plus stable.</label>
+  </div>
+  <button onclick="verifier(14)">Valider</button>
+  <div class="feedback" id="q14-feedback"></div>
+</div>
+
+<script>
+const reponses = {
+  '1':  { val: 6,    tol: 0.05, type: 'num' },
+  '2':  { val: 2,    tol: 0.05, type: 'num' },
+  '3':  { val: 4,    tol: 0.05, type: 'num' },
+  '4':  { val: 8,    tol: 0.05, type: 'num' },
+  '5':  { type: 'multi', champs: { 'q5-uprot': 4, 'q5-ucapt': 8, 'q5-i': 2 }, tol: 0.05 },
+  '6':  { val: 12,   tol: 0.05, type: 'num' },
+  '7':  { val: 8,    tol: 0.05, type: 'num' },
+  '8':  { val: 'C',  type: 'qcm' },
+  '9':  { val: 22,   tol: 0.05, type: 'num' },
+  '10': { val: 'B',  type: 'qcm' },
+  '11': { val: 23,   tol: 0.05, type: 'num' },
+  '12': { type: 'multi', champs: { 'q12-ucomp': 230, 'q12-upons': 230, 'q12-uperc': 230, 'q12-itot': 22 }, tol: 0.05 },
+  '13': { val: 'C',  type: 'qcm' },
+  '14': { val: 'C',  type: 'qcm' }
+};
+
+const indices = {
+  '1': [
+    "💡 Indice 1 : En série, les résistances s'ADDITIONNENT.",
+    "💡 Indice 2 : R_totale = R_prot + R_capt = 2 + 4.",
+    "💡 Indice 3 : 2 + 4 = 6. Réponse en ohms."
+  ],
+  '2': [
+    "💡 Indice 1 : Loi d'Ohm : I = U ÷ R.",
+    "💡 Indice 2 : U = 12 V, R_totale = 6 Ω (calculé en Q1).",
+    "💡 Indice 3 : 12 ÷ 6 = ?"
+  ],
+  '3': [
+    "💡 Indice 1 : Pour la résistance de protection seule : U_prot = R_prot × I.",
+    "💡 Indice 2 : R_prot = 2 Ω, I = 2 A (calculé en Q2).",
+    "💡 Indice 3 : 2 × 2 = ?"
+  ],
+  '4': [
+    "💡 Indice 1 : Méthode 1 : U_capt = R_capt × I = 4 × 2.",
+    "💡 Indice 2 : Méthode 2 (loi des mailles) : U_capt = U − U_prot = 12 − 4.",
+    "💡 Indice 3 : Les deux méthodes donnent 8 V."
+  ],
+  '5': [
+    "💡 Indice 1 : Reporte les valeurs trouvées en Q3, Q4 et Q2.",
+    "💡 Indice 2 : U_prot = 4 V (Q3), U_capt = 8 V (Q4), I = 2 A (Q2).",
+    "💡 Indice 3 : Vérifie les TROIS cases : 4, 8 et 2."
+  ],
+  '6': [
+    "💡 Indice 1 : Loi d'Ohm transformée : R = U ÷ I.",
+    "💡 Indice 2 : U = 12 V (alimentation, n'a pas changé), I = 1 A (mesuré).",
+    "💡 Indice 3 : 12 ÷ 1 = ?"
+  ],
+  '7': [
+    "💡 Indice 1 : R_totale = R_prot + R_capt, donc R_prot = R_totale − R_capt.",
+    "💡 Indice 2 : R_totale réelle = 12 Ω (Q6), R_capt = 4 Ω (énoncé).",
+    "💡 Indice 3 : 12 − 4 = ?"
+  ],
+  '8': [
+    "💡 Indice 1 : La R_prot est passée de 2 Ω à 8 Ω (Q7). Quelle conséquence sur la tension qu'elle absorbe ?",
+    "💡 Indice 2 : Avec R_prot plus grande, U_prot devient plus grande (= 8 × 1 = 8 V). Et donc U_capt = 12 − 8 = 4 V seulement.",
+    "💡 Indice 3 : Le capteur reçoit 4 V au lieu des 8 V nécessaires : il ne peut plus fonctionner. La cause est une mauvaise résistance de protection installée à la place de l'originale."
+  ],
+  '9': [
+    "💡 Indice 1 : Loi des nœuds : I_totale = somme des intensités de toutes les branches.",
+    "💡 Indice 2 : I_totale = 10 + 7 + 5.",
+    "💡 Indice 3 : 10 + 7 + 5 = ?"
+  ],
+  '10': [
+    "💡 Indice 1 : Compare l'intensité calculée en Q9 (22 A) au seuil du disjoncteur (20 A).",
+    "💡 Indice 2 : 22 > 20, donc le seuil est dépassé.",
+    "💡 Indice 3 : Le disjoncteur est conçu pour COUPER le courant quand on dépasse 20 A : c'est sa fonction de protection."
+  ],
+  '11': [
+    "💡 Indice 1 : En dérivation, le compresseur reçoit la tension complète du tableau : 230 V.",
+    "💡 Indice 2 : Loi d'Ohm : R = U ÷ I = 230 ÷ 10.",
+    "💡 Indice 3 : 230 ÷ 10 = ?"
+  ],
+  '12': [
+    "💡 Indice 1 : En dérivation, TOUTES les branches reçoivent la même tension que le tableau (230 V). Pour I_total, c'est la valeur de la Q9.",
+    "💡 Indice 2 : U_comp = U_pons = U_perc = 230 V. I_total = 22 A.",
+    "💡 Indice 3 : Reporte les QUATRE valeurs : 230, 230, 230, 22."
+  ],
+  '13': [
+    "💡 Indice 1 : Calcule mentalement I_totale dans chaque scénario, puis compare à 20 A.",
+    "💡 Indice 2 : Sans compresseur : 7+5 = 12 A (OK, mais on garde la perceuse et la ponceuse). Sans ponceuse : 10+5 = 15 A (mais on en a besoin). Sans perceuse : 10+7 = 17 A (mais on en a besoin aussi).",
+    "💡 Indice 3 : La seule solution qui permet de garder les deux outils nécessaires (ponceuse + perceuse) est d'éteindre le compresseur."
+  ],
+  '14': [
+    "💡 Indice 1 : En série, qu'arrive-t-il aux autres machines si UNE seule s'arrête ?",
+    "💡 Indice 2 : En série, le courant a un seul chemin : si une machine s'arrête, plus rien ne circule, toutes s'arrêtent.",
+    "💡 Indice 3 : De plus, la tension de 230 V serait partagée entre les trois machines (loi des mailles), donc aucune ne recevrait assez pour fonctionner correctement."
+  ]
+};
+
+const essais = {};
+const validees = new Set();
+
+function arrondir(n) {
+  return Math.round(n * 100) / 100;
+}
+
+function majScore() {
+  document.getElementById('score').textContent = validees.size;
+}
+
+function afficherFeedback(qId, type, message) {
+  const fb = document.getElementById('q' + qId + '-feedback');
+  fb.className = 'feedback ' + type;
+  fb.innerHTML = message;
+  fb.style.display = 'block';
+}
+
+function verifier(qId) {
+  if (validees.has(qId)) return;
+
+  const rep = reponses[qId];
+  let estCorrect = false;
+
+  if (rep.type === 'num') {
+    const input = document.getElementById('q' + qId + '-input');
+    const val = parseFloat(input.value.replace(',', '.'));
+    if (isNaN(val)) {
+      afficherFeedback(qId, 'indice', "⚠️ Saisis un nombre avant de valider.");
+      return;
+    }
+    estCorrect = Math.abs(arrondir(val) - rep.val) <= rep.tol;
+  } else if (rep.type === 'qcm') {
+    const choix = document.querySelector('input[name="q' + qId + '"]:checked');
+    if (!choix) {
+      afficherFeedback(qId, 'indice', "⚠️ Sélectionne une réponse avant de valider.");
+      return;
+    }
+    estCorrect = (choix.value === rep.val);
+  } else if (rep.type === 'multi') {
+    let toutOk = true;
+    let manquant = false;
+    for (const [id, attendu] of Object.entries(rep.champs)) {
+      const v = parseFloat(document.getElementById(id).value.replace(',', '.'));
+      if (isNaN(v)) { manquant = true; break; }
+      if (Math.abs(arrondir(v) - attendu) > rep.tol) { toutOk = false; }
+    }
+    if (manquant) {
+      afficherFeedback(qId, 'indice', "⚠️ Remplis TOUS les champs avant de valider.");
+      return;
+    }
+    estCorrect = toutOk;
+  }
+
+  if (estCorrect) {
+    validees.add(qId);
+    majScore();
+    afficherFeedback(qId, 'correct', "✅ <strong>Bravo !</strong> Réponse correcte.");
+    const q = document.querySelector('[data-q="' + qId + '"]');
+    q.querySelectorAll('input, button').forEach(el => el.disabled = true);
+  } else {
+    essais[qId] = (essais[qId] || 0) + 1;
+    const numEssai = essais[qId];
+    const indicesQ = indices[qId];
+
+    if (numEssai <= indicesQ.length) {
+      const indice = indicesQ[numEssai - 1];
+      afficherFeedback(qId, 'indice',
+        "❌ Ce n'est pas la bonne réponse. <br><br>" + indice +
+        "<br><br><em>Reprends ton brouillon, refais le raisonnement, puis essaie à nouveau.</em>"
+      );
+    } else {
+      let solution;
+      if (rep.type === 'num') {
+        solution = rep.val;
+      } else if (rep.type === 'qcm') {
+        solution = "réponse " + rep.val;
+      } else if (rep.type === 'multi') {
+        solution = Object.values(rep.champs).join(', ');
+      }
+      afficherFeedback(qId, 'solution',
+        "❌ Tous les indices ont été donnés. La réponse attendue est : <strong>" + solution + "</strong>." +
+        "<br><br>Reprends bien le raisonnement étape par étape sur ton brouillon."
+      );
+    }
+  }
+}
+</script>
+
+</body>
+</html>
